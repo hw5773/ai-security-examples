@@ -1,0 +1,32 @@
+theory dh
+begin
+
+builtins: diffie-hellman
+
+rule A_hello:
+  let X = 'g'^(~a)
+  in
+  [ Fr(~a) ]
+  --[ ASend(X) ]->
+  [ Out(X), AExp(~a) ]
+
+rule B_reply:
+  let k = Xa^(~b)
+  in
+  [ Fr(~b), In(Xa) ]
+  --[ BSend('g'^(~b)), BKey(k) ]->
+  [ Out('g'^(~b)) ]
+
+rule A_finish:
+  let k = Xb^(~a)
+  in
+  [ In(Xb), AExp(~a) ]
+  --[ AKey(k) ]->
+  [ ]
+
+lemma Agreement:
+  "All ka kb #i #j.
+    AKey(ka) @ i & BKey(kb) @ j & j < i
+      ==> ka = kb"
+
+end
